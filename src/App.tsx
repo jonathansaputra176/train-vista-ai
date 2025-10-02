@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ChatBot from "./components/ChatBot";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import AdminLayout from "./components/AdminLayout";
 import { AuthProvider } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import SearchResults from "./pages/SearchResults";
@@ -21,6 +23,12 @@ import PaymentConfirmation from "./pages/PaymentConfirmation";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import TrainMonitoring from "./pages/admin/TrainMonitoring";
+import RefundManagement from "./pages/admin/RefundManagement";
+import TicketConfirmation from "./pages/admin/TicketConfirmation";
+import ForumModeration from "./pages/admin/ForumModeration";
+import AdminLogs from "./pages/admin/AdminLogs";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +54,15 @@ const App = () => (
             <Route path="/notification-preferences" element={<ProtectedRoute><NotificationPreferences /></ProtectedRoute>} />
             <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
             <Route path="/payment-confirmation" element={<ProtectedRoute><PaymentConfirmation /></ProtectedRoute>} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin/dashboard" element={<ProtectedAdminRoute><AdminLayout><AdminDashboard /></AdminLayout></ProtectedAdminRoute>} />
+            <Route path="/admin/train-monitoring" element={<ProtectedAdminRoute><AdminLayout><TrainMonitoring /></AdminLayout></ProtectedAdminRoute>} />
+            <Route path="/admin/refund-management" element={<ProtectedAdminRoute><AdminLayout><RefundManagement /></AdminLayout></ProtectedAdminRoute>} />
+            <Route path="/admin/ticket-confirmation" element={<ProtectedAdminRoute><AdminLayout><TicketConfirmation /></AdminLayout></ProtectedAdminRoute>} />
+            <Route path="/admin/forum-moderation" element={<ProtectedAdminRoute><AdminLayout><ForumModeration /></AdminLayout></ProtectedAdminRoute>} />
+            <Route path="/admin/logs" element={<ProtectedAdminRoute><AdminLayout><AdminLogs /></AdminLayout></ProtectedAdminRoute>} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

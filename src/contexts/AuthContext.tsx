@@ -7,6 +7,7 @@ interface User {
   name: string;
   email: string;
   phone?: string;
+  role: 'user' | 'admin';
 }
 
 interface AuthContextType {
@@ -40,18 +41,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));
 
+    // Check if admin credentials (mock)
+    const isAdmin = email === 'admin@kaibook.com' && password === 'admin123';
+
     // Mock successful login
     const mockUser: User = {
-      id: '1',
-      name: 'John Doe',
+      id: isAdmin ? 'admin-1' : '1',
+      name: isAdmin ? 'Admin User' : 'John Doe',
       email: email,
-      phone: '+62 812 3456 7890'
+      phone: '+62 812 3456 7890',
+      role: isAdmin ? 'admin' : 'user'
     };
 
     localStorage.setItem('user', JSON.stringify(mockUser));
     setUser(mockUser);
     toast.success('Login successful!');
-    navigate('/');
+    
+    // Redirect based on role
+    if (mockUser.role === 'admin') {
+      navigate('/admin/dashboard');
+    } else {
+      navigate('/');
+    }
     return true;
   };
 
@@ -65,12 +76,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Mock successful signup
+    // Mock successful signup (always creates a user role)
     const newUser: User = {
       id: Date.now().toString(),
       name,
       email,
-      phone
+      phone,
+      role: 'user'
     };
 
     localStorage.setItem('user', JSON.stringify(newUser));

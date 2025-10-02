@@ -32,6 +32,9 @@ const Login = () => {
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
           <CardDescription>
             Sign in to your KAI Book account
+            <div className="mt-2 text-xs text-muted-foreground">
+              Demo admin: admin@kaibook.com / admin123
+            </div>
           </CardDescription>
         </CardHeader>
         <CardContent>
