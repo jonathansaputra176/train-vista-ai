@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import SeatSelection from "@/components/SeatSelection";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Train, MapPin, Calendar, Users, DollarSign, CreditCard } from "lucide-react";
-import { toast } from "sonner";
+import { Train, MapPin, Calendar, Users } from "lucide-react";
 
 const Booking = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const trainId = searchParams.get("train");
@@ -34,13 +35,20 @@ const Booking = () => {
   const tax = totalPrice * 0.1;
   const grandTotal = totalPrice + tax;
 
-  const handlePayment = () => {
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      toast.success("Booking confirmed! Check your email for the ticket.");
-      navigate("/my-orders");
-    }, 2000);
+  const handleBooking = () => {
+    if (selectedSeats.length === 0) {
+      alert("Please select at least one seat");
+      return;
+    }
+    const queryParams = new URLSearchParams({
+      origin: origin,
+      destination: destination,
+      date: date,
+      passengers: passengers.toString(),
+      class: train.type,
+      seats: selectedSeats.join(", "),
+    });
+    navigate(`/checkout?${queryParams.toString()}`);
   };
 
   return (
@@ -132,30 +140,21 @@ const Booking = () => {
               </div>
             </Card>
 
-            {/* Payment Method */}
-            <Card className="p-6">
-              <h2 className="text-xl font-bold mb-4">Payment Method</h2>
-              <div className="space-y-3">
-                <div className="p-4 border rounded-lg cursor-pointer hover:border-primary transition-colors">
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="h-5 w-5 text-primary" />
-                    <div>
-                      <p className="font-semibold">Credit/Debit Card</p>
-                      <p className="text-sm text-muted-foreground">Visa, Mastercard, etc.</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 border rounded-lg cursor-pointer hover:border-primary transition-colors opacity-50">
-                  <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-primary" />
-                    <div>
-                      <p className="font-semibold">E-Wallet</p>
-                      <p className="text-sm text-muted-foreground">GoPay, OVO, Dana</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card>
+            {/* Seat Selection */}
+            <SeatSelection
+              seatClass={train.type}
+              maxSeats={passengers}
+              onSeatsSelected={setSelectedSeats}
+            />
+
+            <Button
+              onClick={handleBooking}
+              size="lg"
+              className="w-full"
+              disabled={selectedSeats.length === 0}
+            >
+              Continue to Payment
+            </Button>
           </div>
 
           {/* Order Summary Sidebar */}
@@ -178,18 +177,8 @@ const Booking = () => {
                 </div>
               </div>
 
-              <Button
-                onClick={handlePayment}
-                disabled={isProcessing}
-                variant="hero"
-                size="lg"
-                className="w-full mt-6"
-              >
-                {isProcessing ? "Processing..." : "Confirm & Pay"}
-              </Button>
-
               <p className="text-xs text-muted-foreground text-center mt-4">
-                By proceeding, you agree to our terms and conditions
+                Select your seats to continue
               </p>
             </Card>
           </div>

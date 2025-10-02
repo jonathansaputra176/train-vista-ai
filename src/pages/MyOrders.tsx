@@ -4,9 +4,26 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Train, Calendar, MapPin, Users, DollarSign, FileText } from "lucide-react";
+import { Train, Calendar, MapPin, Users, DollarSign, FileText, Download, QrCode } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const MyOrders = () => {
+  const { toast } = useToast();
+
+  const handleDownloadTicket = () => {
+    toast({
+      title: "Download Started",
+      description: "Your e-ticket is being downloaded.",
+    });
+  };
+
+  const handleViewQR = () => {
+    toast({
+      title: "QR Code",
+      description: "Scan this QR code at the station.",
+    });
+  };
+
   // Mock orders data
   const orders = [
     {
@@ -81,10 +98,16 @@ const MyOrders = () => {
                   </div>
                   <p className="text-sm text-muted-foreground">Order ID: {order.id}</p>
                 </div>
-                <Button variant="outline" size="sm">
-                  <FileText className="h-4 w-4 mr-2" />
-                  View Ticket
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleViewQR}>
+                    <QrCode className="h-4 w-4 mr-2" />
+                    QR Code
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleDownloadTicket}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                </div>
               </div>
 
               <Separator className="my-4" />

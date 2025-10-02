@@ -10,6 +10,12 @@ import Booking from "./pages/Booking";
 import MyOrders from "./pages/MyOrders";
 import Delays from "./pages/Delays";
 import Community from "./pages/Community";
+import Profile from "./pages/Profile";
+import TravelHistory from "./pages/TravelHistory";
+import PaymentMethods from "./pages/PaymentMethods";
+import NotificationPreferences from "./pages/NotificationPreferences";
+import Checkout from "./pages/Checkout";
+import PaymentConfirmation from "./pages/PaymentConfirmation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +33,12 @@ const App = () => (
           <Route path="/my-orders" element={<MyOrders />} />
           <Route path="/delays" element={<Delays />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/travel-history" element={<TravelHistory />} />
+          <Route path="/payment-methods" element={<PaymentMethods />} />
+          <Route path="/notification-preferences" element={<NotificationPreferences />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

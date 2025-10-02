@@ -1,10 +1,14 @@
+import { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Train, Clock, ArrowRight, Users, DollarSign, MapPin } from "lucide-react";
+import { Train, Clock, ArrowRight, Users, DollarSign, MapPin, SlidersHorizontal } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
@@ -12,6 +16,9 @@ const SearchResults = () => {
   const destination = searchParams.get("destination") || "Surabaya";
   const date = searchParams.get("date") || "2025-10-15";
   const passengers = searchParams.get("passengers") || "1";
+
+  const [trainClass, setTrainClass] = useState<string>("all");
+  const [priceRange, setPriceRange] = useState<number[]>([0, 500000]);
 
   // Mock train data
   const trains = [
@@ -49,6 +56,13 @@ const SearchResults = () => {
       isRecommended: false,
     },
   ];
+
+  // Filter trains based on class and price
+  const filteredTrains = trains.filter((train) => {
+    const classMatch = trainClass === "all" || train.type === trainClass;
+    const priceMatch = train.price >= priceRange[0] && train.price <= priceRange[1];
+    return classMatch && priceMatch;
+  });
 
   // Mock alternative routes
   const alternativeRoutes = [
@@ -88,11 +102,75 @@ const SearchResults = () => {
           </div>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Filters Sidebar */}
+          <div className="lg:col-span-1">
+            <Card className="p-6 sticky top-4">
+              <div className="flex items-center gap-2 mb-6">
+                <SlidersHorizontal className="h-5 w-5 text-primary" />
+                <h2 className="text-lg font-bold">Filters</h2>
+              </div>
+
+              <div className="space-y-6">
+                {/* Train Class Filter */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-semibold">Train Class</Label>
+                  <Select value={trainClass} onValueChange={setTrainClass}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="All Classes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Classes</SelectItem>
+                      <SelectItem value="Executive">Executive</SelectItem>
+                      <SelectItem value="Business">Business</SelectItem>
+                      <SelectItem value="Economy">Economy</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Separator />
+
+                {/* Price Range Filter */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-semibold">Price Range</Label>
+                  <div className="pt-2">
+                    <Slider
+                      value={priceRange}
+                      onValueChange={setPriceRange}
+                      max={500000}
+                      step={10000}
+                      className="mb-4"
+                    />
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Rp {priceRange[0].toLocaleString()}</span>
+                      <span>Rp {priceRange[1].toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    setTrainClass("all");
+                    setPriceRange([0, 500000]);
+                  }}
+                >
+                  Reset Filters
+                </Button>
+              </div>
+            </Card>
+          </div>
+
           {/* Main Results */}
           <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-2xl font-bold mb-4">Available Trains</h2>
-            {trains.map((train) => (
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Available Trains</h2>
+              <p className="text-sm text-muted-foreground">
+                {filteredTrains.length} train{filteredTrains.length !== 1 ? "s" : ""} found
+              </p>
+            </div>
+            {filteredTrains.map((train) => (
               <Card key={train.id} className="p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -155,7 +233,7 @@ const SearchResults = () => {
           </div>
 
           {/* Alternative Routes Sidebar */}
-          <div className="space-y-4">
+          <div className="lg:col-span-1 space-y-4">
             <Card className="p-6">
               <h3 className="font-bold text-lg mb-4">Alternative Routes</h3>
               {alternativeRoutes.map((alt, index) => (
